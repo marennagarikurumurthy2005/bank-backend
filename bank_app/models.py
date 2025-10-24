@@ -1,11 +1,12 @@
 from django.db import models
+from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
 class User(AbstractUser):
     account_number=models.CharField(max_length=18)
-    balance=models.DecimalField(default=0.0, max_digits=5, decimal_places=2)
+    balance = models.DecimalField(default=Decimal('0.00'), max_digits=12, decimal_places=2)
 
 
 class Transactions(models.Model):

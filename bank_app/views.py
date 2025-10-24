@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer,TransactionSerializer
 from . models import User,Transactions
+from decimal import Decimal
 
 # Create your views here.
 
@@ -21,8 +22,10 @@ class Registrationview(APIView):
         username=request.data.get('username')
         email=request.data.get('email')
         account_number=request.data.get('account_number')
+        balance=request.data.get('balance',0)
+        balance = Decimal(str(balance))
         password=request.data.get('password')
-        balance=request.data.get('balance')
+        
         if User.objects.filter(username=username , account_number=account_number).exists():
             return Response({"error":"User already exist"},status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.create_user(username=username,email=email,account_number=account_number,balance=balance ,password=password)
@@ -43,17 +46,17 @@ class Loginview(APIView):
     
 # Dashboard 
 class Dashboardview(APIView):
-    permission_class=[IsAuthenticated]
+    permission_classes=[IsAuthenticated]
     def get(self,request):
         user=request.user
         return Response(UserSerializer(user).data)
     
 class Transactionview(APIView):
-    permission_class=[IsAuthenticated]
+    permission_classes=[IsAuthenticated]
     def post(self,request):
         user=request.user
         tr_type=request.data.get('type')
-        amount=float(request.data.get('amount'))
+        amount = Decimal(str(request.data.get('amount')))
         if tr_type=='debit' and user.balance<amount:
             return Response({"error":"Insufficient balance"},status=status.HTTP_400_BAD_REQUEST)
         elif tr_type=='credit':
