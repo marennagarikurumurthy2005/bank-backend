@@ -5,9 +5,11 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class User(AbstractUser):
-    account_number=models.CharField(max_length=18)
+    account_number=models.CharField(max_length=18,unique=True)
     balance = models.DecimalField(default=Decimal('0.00'), max_digits=12, decimal_places=2)
-
+    """  def __str__(self):
+        return  """
+    
 
 class Transactions(models.Model):
     TRANSACTION_TYPE=(
@@ -18,4 +20,6 @@ class Transactions(models.Model):
     type = models.CharField(max_length=10, choices=TRANSACTION_TYPE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
-
+    
+    """ def __str__(self):
+        return """

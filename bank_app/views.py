@@ -26,8 +26,13 @@ class Registrationview(APIView):
         balance = Decimal(str(balance))
         password=request.data.get('password')
         
-        if User.objects.filter(username=username , account_number=account_number).exists():
-            return Response({"error":"User already exist"},status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username=username ).exists():
+            return Response({"error":"Username already taken"},status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.filter(account_number=account_number).exists():
+            return Response(
+                {"error": "Account number already exists"}, status=status.HTTP_400_BAD_REQUEST
+            )
         user = User.objects.create_user(username=username,email=email,account_number=account_number,balance=balance ,password=password)
         token =get_token_for_user(user)
         return Response({"user": UserSerializer(user).data, "token": token})
@@ -71,8 +76,15 @@ class Transactionview(APIView):
 
 
 
+class UserTransactionsView(APIView):
+    
+    permission_classes = [IsAuthenticated]
 
-
+    def get(self, request):
+        user = request.user  # Get the logged-in user
+        transactions = Transactions.objects.filter(user=user).order_by('-timestamp')  # Latest first
+        serializer = TransactionSerializer(transactions, many=True)
+        return Response(serializer.data)
 
 
 
