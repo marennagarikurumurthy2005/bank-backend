@@ -145,5 +145,6 @@ AUTH_USER_MODEL = 'bank_app.User'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite React default port
     "http://127.0.0.1:5173",
+    "https://bank-frontend-lemon.vercel.app/"
 ]
 CORS_ALLOW_ALL_ORIGINS = True
